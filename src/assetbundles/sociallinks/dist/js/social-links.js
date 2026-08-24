@@ -25,17 +25,12 @@
     return map;
   }
 
-  function getBaseName(input) {
-    if (input.dataset.nameBase) {
-      return input.dataset.nameBase;
+  function buildIndexedName(name, index) {
+    if (!name) {
+      return name;
     }
 
-    if (!input.name) {
-      return null;
-    }
-
-    var match = input.name.match(/\]\[(.*?)\]$/);
-    return match ? match[1] : null;
+    return name.replace(/\[(?:__INDEX__|\d+)\]\[(network|url)\]$/, '[' + index + '][$1]');
   }
 
   function SocialLinksField(root) {
@@ -45,14 +40,13 @@
 
     this.root = root;
     this.root.dataset.pslReady = '1';
-    this.inputName = root.dataset.inputName || '';
     this.tbody = root.querySelector('[data-rows]');
     this.template = root.querySelector('[data-row-template]');
     this.addButton = root.querySelector('[data-add-row]');
     this.networkByHandle = buildNetworkMap(parseJsonScript(root));
     this.dragRow = null;
 
-    if (!this.tbody || !this.template || !this.addButton || !this.inputName) {
+    if (!this.tbody || !this.template || !this.addButton) {
       return;
     }
 
@@ -93,12 +87,11 @@
     for (var i = 0; i < rows.length; i++) {
       var inputs = rows[i].querySelectorAll('select,input');
       for (var j = 0; j < inputs.length; j++) {
-        var base = getBaseName(inputs[j]);
-        if (!base) {
+        if (!inputs[j].name) {
           continue;
         }
 
-        inputs[j].name = this.inputName + '[' + i + '][' + base + ']';
+        inputs[j].name = buildIndexedName(inputs[j].name, i);
       }
     }
   };

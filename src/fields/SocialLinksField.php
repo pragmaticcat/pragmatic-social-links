@@ -118,7 +118,6 @@ class SocialLinksField extends Field
             'value' => $normalized,
             'id' => $id,
             'namespacedId' => $namespacedId,
-            'inputName' => $inputName,
             'socialNetworks' => self::socialNetworkOptions(),
             'socialNetworkMap' => self::socialNetworks(),
         ]);
