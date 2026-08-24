@@ -25,6 +25,10 @@
     return map;
   }
 
+  function networkPlaceholder(item) {
+    return item ? item.label : 'Select a social network first';
+  }
+
   function buildIndexedName(name, index) {
     if (!name) {
       return name;
@@ -99,6 +103,7 @@
   SocialLinksField.prototype.renderPreview = function(row) {
     var select = row.querySelector('[data-network-select]');
     var preview = row.querySelector('[data-network-preview]');
+    var titleInput = row.querySelector('[data-title-input]');
     var item;
 
     if (!select || !preview) {
@@ -106,6 +111,10 @@
     }
 
     item = this.networkByHandle[select.value];
+    if (titleInput) {
+      titleInput.placeholder = networkPlaceholder(item);
+    }
+
     if (!item) {
       preview.innerHTML = '';
       return;
@@ -114,10 +123,34 @@
     preview.innerHTML = item.icon + '<span>' + item.label + '</span>';
   };
 
+  SocialLinksField.prototype.filterOptions = function(row, query) {
+    var select = row.querySelector('[data-network-select]');
+    var normalizedQuery = (query || '').toLowerCase();
+    var options;
+    var i;
+    var text;
+
+    if (!select) {
+      return;
+    }
+
+    options = select.querySelectorAll('option');
+    for (i = 0; i < options.length; i++) {
+      if (!options[i].value) {
+        options[i].hidden = false;
+        continue;
+      }
+
+      text = (options[i].textContent || '').toLowerCase();
+      options[i].hidden = normalizedQuery !== '' && text.indexOf(normalizedQuery) === -1;
+    }
+  };
+
   SocialLinksField.prototype.attachRow = function(row) {
     var self = this;
     var removeButton = row.querySelector('[data-remove-row]');
     var select = row.querySelector('[data-network-select]');
+    var search = row.querySelector('[data-network-search]');
 
     if (removeButton) {
       removeButton.addEventListener('click', function() {
@@ -130,6 +163,12 @@
     if (select) {
       select.addEventListener('change', function() {
         self.renderPreview(row);
+      });
+    }
+
+    if (search) {
+      search.addEventListener('input', function() {
+        self.filterOptions(row, search.value);
       });
     }
 
@@ -159,6 +198,7 @@
     });
 
     this.renderPreview(row);
+    this.filterOptions(row, search ? search.value : '');
   };
 
   SocialLinksField.prototype.addRow = function() {

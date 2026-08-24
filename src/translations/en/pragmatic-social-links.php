@@ -6,6 +6,8 @@ return [
     'Title' => 'Title',
     'URL' => 'URL',
     'Select a social network' => 'Select a social network',
+    'Search social networks...' => 'Search social networks...',
+    'Select a social network first' => 'Select a social network first',
     'Defaults to the social network name' => 'Defaults to the social network name',
     'No social links yet. Add the first row below.' => 'No social links yet. Add the first row below.',
     'Add social link' => 'Add social link',

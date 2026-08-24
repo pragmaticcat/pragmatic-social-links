@@ -69,6 +69,9 @@
     width: 16px;
     height: 16px;
   }
+  .psl-network-search {
+    margin-bottom: 8px;
+  }
   .psl-add {
     justify-self: start;
   }
@@ -98,6 +101,13 @@
               <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
             </td>
             <td>
+              <input
+                class="text fullwidth psl-network-search"
+                type="text"
+                value=""
+                placeholder="{{ 'Search social networks...'|t('pragmatic-social-links') }}"
+                data-network-search
+              />
               <select class="select" name="{{ field.handle }}[{{ loop.index0 }}][network]" data-network-select>
                 <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
                 {% for option in socialNetworks %}
@@ -118,7 +128,8 @@
                 type="text"
                 name="{{ field.handle }}[{{ loop.index0 }}][title]"
                 value="{{ row.title }}"
-                placeholder="{{ 'Defaults to the social network name'|t('pragmatic-social-links') }}"
+                placeholder="{{ 'Select a social network first'|t('pragmatic-social-links') }}"
+                data-title-input
               />
             </td>
             <td>
@@ -145,6 +156,13 @@
         <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
       </td>
       <td>
+        <input
+          class="text fullwidth psl-network-search"
+          type="text"
+          value=""
+          placeholder="{{ 'Search social networks...'|t('pragmatic-social-links') }}"
+          data-network-search
+        />
         <select class="select" name="{{ field.handle }}[__INDEX__][network]" data-network-select>
           <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
           {% for option in socialNetworks %}
@@ -158,7 +176,8 @@
           class="text fullwidth"
           type="text"
           name="{{ field.handle }}[__INDEX__][title]"
-          placeholder="{{ 'Defaults to the social network name'|t('pragmatic-social-links') }}"
+          placeholder="{{ 'Select a social network first'|t('pragmatic-social-links') }}"
+          data-title-input
         />
       </td>
       <td>
