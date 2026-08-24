@@ -1,0 +1,256 @@
+{% import '_includes/forms' as forms %}
+
+{% set rows = value.all() %}
+{% set networkMapJson = socialNetworkMap|json_encode(constant('JSON_UNESCAPED_SLASHES')) %}
+
+{% css %}
+  .psl-field {
+    display: grid;
+    gap: 12px;
+  }
+  .psl-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #d7dde5;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .psl-table thead th {
+    padding: 10px 12px;
+    background: #f7f9fc;
+    border-bottom: 1px solid #d7dde5;
+    font-size: 12px;
+    font-weight: 700;
+    color: #445266;
+  }
+  .psl-table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #edf1f5;
+    vertical-align: middle;
+  }
+  .psl-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .psl-table tbody tr.psl-dragging {
+    opacity: .45;
+  }
+  .psl-handle,
+  .psl-remove {
+    width: 42px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .psl-drag {
+    width: 30px;
+    height: 30px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #596579;
+    cursor: grab;
+    font-size: 16px;
+  }
+  .psl-empty {
+    padding: 24px 16px;
+    color: #66768a;
+    text-align: center;
+  }
+  .psl-network-preview {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    color: #66768a;
+    font-size: 12px;
+  }
+  .psl-network-preview svg {
+    width: 16px;
+    height: 16px;
+  }
+  .psl-add {
+    justify-self: start;
+  }
+{% endcss %}
+
+<div id="{{ namespacedId }}" class="psl-field" data-social-links-field data-network-map="{{ networkMapJson|e('html_attr') }}">
+  <table class="psl-table">
+    <thead>
+      <tr>
+        <th class="psl-handle"></th>
+        <th>{{ 'Social network'|t('pragmatic-social-links') }}</th>
+        <th>{{ 'URL'|t('pragmatic-social-links') }}</th>
+        <th class="psl-remove"></th>
+      </tr>
+    </thead>
+    <tbody data-rows>
+      {% if rows %}
+        {% for row in rows %}
+          <tr data-row draggable="true">
+            <td class="psl-handle">
+              <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
+            </td>
+            <td>
+              <select class="select" name="{{ field.handle }}[{{ loop.index0 }}][network]" data-network-select>
+                <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
+                {% for option in socialNetworks %}
+                  <option value="{{ option.value }}" {{ option.value == row.network ? 'selected' }}>{{ option.label }}</option>
+                {% endfor %}
+              </select>
+              <div class="psl-network-preview" data-network-preview>
+                {% set network = socialNetworkMap|filter(item => item.handle == row.network)|first %}
+                {% if network %}
+                  {{ network.icon|raw }}
+                  <span>{{ network.label }}</span>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <input class="text fullwidth" type="url" name="{{ field.handle }}[{{ loop.index0 }}][url]" value="{{ row.url }}" placeholder="https://..." />
+            </td>
+            <td class="psl-remove">
+              <button type="button" class="btn" data-remove-row>{{ 'Delete'|t('site') }}</button>
+            </td>
+          </tr>
+        {% endfor %}
+      {% else %}
+        <tr data-empty-state>
+          <td colspan="4" class="psl-empty">{{ 'No social links yet. Add the first row below.'|t('pragmatic-social-links') }}</td>
+        </tr>
+      {% endif %}
+    </tbody>
+  </table>
+
+  <button type="button" class="btn add icon psl-add" data-add-row>{{ 'Add social link'|t('pragmatic-social-links') }}</button>
+
+  <template data-row-template>
+    <tr data-row draggable="true">
+      <td class="psl-handle">
+        <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
+      </td>
+      <td>
+        <select class="select" data-name-base="network" data-network-select>
+          <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
+          {% for option in socialNetworks %}
+            <option value="{{ option.value }}">{{ option.label }}</option>
+          {% endfor %}
+        </select>
+        <div class="psl-network-preview" data-network-preview></div>
+      </td>
+      <td>
+        <input class="text fullwidth" type="url" data-name-base="url" placeholder="https://..." />
+      </td>
+      <td class="psl-remove">
+        <button type="button" class="btn" data-remove-row>{{ 'Delete'|t('site') }}</button>
+      </td>
+    </tr>
+  </template>
+</div>
+
+{% js %}
+(() => {
+  const root = document.getElementById('{{ namespacedId|e('js') }}');
+  if (!root || root.dataset.pslReady) {
+    return;
+  }
+  root.dataset.pslReady = '1';
+
+  const tbody = root.querySelector('[data-rows]');
+  const template = root.querySelector('[data-row-template]');
+  const addButton = root.querySelector('[data-add-row]');
+  const networkMap = JSON.parse(root.dataset.networkMap || '[]');
+  let dragRow = null;
+
+  const networkByHandle = new Map(networkMap.map((item) => [item.handle, item]));
+
+  const updateEmptyState = () => {
+    const rows = tbody.querySelectorAll('[data-row]');
+    const empty = tbody.querySelector('[data-empty-state]');
+    if (rows.length && empty) {
+      empty.remove();
+    } else if (!rows.length && !empty) {
+      const row = document.createElement('tr');
+      row.dataset.emptyState = '1';
+      row.innerHTML = '<td colspan="4" class="psl-empty">{{ "No social links yet. Add the first row below."|t("pragmatic-social-links")|e("js") }}</td>';
+      tbody.appendChild(row);
+    }
+  };
+
+  const reindexRows = () => {
+    tbody.querySelectorAll('[data-row]').forEach((row, index) => {
+      row.querySelectorAll('select,input').forEach((input) => {
+        const base = input.dataset.nameBase || input.name.match(/\]\[(.*?)\]$/)?.[1];
+        if (!base) {
+          return;
+        }
+        input.name = '{{ field.handle|e("js") }}[' + index + '][' + base + ']';
+      });
+    });
+  };
+
+  const renderPreview = (row) => {
+    const select = row.querySelector('[data-network-select]');
+    const preview = row.querySelector('[data-network-preview]');
+    const item = networkByHandle.get(select.value);
+    if (!preview) {
+      return;
+    }
+    if (!item) {
+      preview.innerHTML = '';
+      return;
+    }
+    preview.innerHTML = item.icon + '<span>' + item.label + '</span>';
+  };
+
+  const attachRow = (row) => {
+    row.querySelector('[data-remove-row]').addEventListener('click', () => {
+      row.remove();
+      updateEmptyState();
+      reindexRows();
+    });
+
+    row.querySelector('[data-network-select]').addEventListener('change', () => {
+      renderPreview(row);
+    });
+
+    row.addEventListener('dragstart', () => {
+      dragRow = row;
+      row.classList.add('psl-dragging');
+    });
+
+    row.addEventListener('dragend', () => {
+      dragRow = null;
+      row.classList.remove('psl-dragging');
+      reindexRows();
+    });
+
+    row.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      if (!dragRow || dragRow === row) {
+        return;
+      }
+      const rect = row.getBoundingClientRect();
+      const before = event.clientY < rect.top + rect.height / 2;
+      tbody.insertBefore(dragRow, before ? row : row.nextSibling);
+    });
+
+    renderPreview(row);
+  };
+
+  const addRow = () => {
+    const fragment = template.content.cloneNode(true);
+    const row = fragment.querySelector('[data-row]');
+    tbody.appendChild(fragment);
+    attachRow(row);
+    updateEmptyState();
+    reindexRows();
+  };
+
+  tbody.querySelectorAll('[data-row]').forEach((row) => attachRow(row));
+  updateEmptyState();
+  reindexRows();
+
+  addButton.addEventListener('click', addRow);
+})();
+{% endjs %}

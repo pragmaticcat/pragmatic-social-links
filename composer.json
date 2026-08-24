@@ -1,0 +1,33 @@
+{
+  "name": "pragmatic/social-links-craftcms-plugin",
+  "description": "Craft CMS field type for manageable social links.",
+  "type": "craft-plugin",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.2",
+    "craftcms/cms": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "pragmatic\\sociallinks\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Oriol Noya",
+      "email": "oriolnoya@pragmatic.cat"
+    }
+  ],
+  "support": {
+    "email": "oriolnoya@pragmatic.cat"
+  },
+  "extra": {
+    "handle": "pragmatic-social-links",
+    "class": "pragmatic\\sociallinks\\PragmaticSocialLinks",
+    "name": "Pragmatic Social Links",
+    "developer": "Pragmatic",
+    "developerUrl": "https://www.pragmatic.cat",
+    "hasSettings": true,
+    "hasCpSection": false
+  }
+}

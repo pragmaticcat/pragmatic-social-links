@@ -1,0 +1,180 @@
+{% import '_includes/forms' as forms %}
+
+{% set exampleLinks = [
+  {
+    network: 'instagram',
+    label: 'Instagram',
+    url: 'https://instagram.com/pragmatic'
+  },
+  {
+    network: 'linkedin',
+    label: 'LinkedIn',
+    url: 'https://linkedin.com/company/pragmatic'
+  },
+  {
+    network: 'youtube',
+    label: 'YouTube',
+    url: 'https://youtube.com/@pragmatic'
+  }
+] %}
+
+{% set iconMap = {} %}
+{% for item in socialNetworks %}
+  {% set iconMap = iconMap|merge({ (item.handle): item }) %}
+{% endfor %}
+
+{% css %}
+  .psl-settings {
+    display: grid;
+    gap: 24px;
+  }
+  .psl-settings-card {
+    padding: 18px;
+    border: 1px solid #d7dde5;
+    border-radius: 12px;
+    background: #fff;
+  }
+  .psl-settings-card h2 {
+    margin: 0 0 8px;
+  }
+  .psl-settings-card p {
+    margin: 0 0 14px;
+    color: #5f6d80;
+  }
+  .psl-example-grid {
+    display: grid;
+    gap: 18px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .psl-example-box {
+    padding: 16px;
+    border-radius: 10px;
+    background: #f7f9fc;
+  }
+  .psl-example-box ul {
+    margin: 0;
+    padding-left: 18px;
+  }
+  .psl-example-box li + li {
+    margin-top: 8px;
+  }
+  .psl-icon-links {
+    display: grid;
+    gap: 10px;
+  }
+  .psl-icon-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: #1f2937;
+    text-decoration: none;
+  }
+  .psl-icon-link svg {
+    width: 20px;
+    height: 20px;
+  }
+  .psl-code {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 10px;
+    background: #111827;
+    color: #e5eef9;
+    overflow-x: auto;
+  }
+  .psl-code code {
+    font-family: Menlo, Monaco, Consolas, monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+  }
+  @media (max-width: 900px) {
+    .psl-example-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+{% endcss %}
+
+<div class="psl-settings">
+  {{ forms.lightswitchField({
+    label: 'Show code examples in settings'|t('pragmatic-social-links'),
+    instructions: 'Enable or hide the Twig snippets shown below.'|t('pragmatic-social-links'),
+    id: 'showCodeExamples',
+    name: 'showCodeExamples',
+    on: settings.showCodeExamples ?? true,
+  }) }}
+
+  {{ forms.selectField({
+    label: 'Default example variant'|t('pragmatic-social-links'),
+    instructions: 'Sets which rendering style is highlighted first in the settings page.'|t('pragmatic-social-links'),
+    id: 'defaultRenderVariant',
+    name: 'defaultRenderVariant',
+    value: settings.defaultRenderVariant ?? 'text',
+    options: [
+      { label: 'Text only', value: 'text' },
+      { label: 'With icons', value: 'icons' },
+    ],
+  }) }}
+
+  <section class="psl-settings-card">
+    <h2>{{ 'Rendering examples'|t('pragmatic-social-links') }}</h2>
+    <p>{{ 'These snippets show two frontend patterns for painting the field value in Twig.'|t('pragmatic-social-links') }}</p>
+
+    <div class="psl-example-grid">
+      <article class="psl-example-box">
+        <h3>{{ 'Text only'|t('pragmatic-social-links') }}</h3>
+        <ul>
+          {% for item in exampleLinks %}
+            <li><strong>{{ item.label }}</strong>: <a href="{{ item.url }}">{{ item.url }}</a></li>
+          {% endfor %}
+        </ul>
+
+        {% if settings.showCodeExamples ?? true %}
+          <div class="psl-code"><code>{{ '{% set links = entry.yourSocialLinksFieldHandle ?? null %}'|e }}
+{{ '{% if links and not links.isEmpty() %}'|e }}
+{{ '  <ul>'|e }}
+{{ '    {% for item in links.formatted() %}'|e }}
+{{ '      <li><strong>{{ item.label }}</strong>: <a href="{{ item.url }}">{{ item.url }}</a></li>'|e }}
+{{ '    {% endfor %}'|e }}
+{{ '  </ul>'|e }}
+{{ '{% endif %}'|e }}</code></div>
+        {% endif %}
+      </article>
+
+      <article class="psl-example-box">
+        <h3>{{ 'With icons'|t('pragmatic-social-links') }}</h3>
+        <div class="psl-icon-links">
+          {% for item in exampleLinks %}
+            <a class="psl-icon-link" href="{{ item.url }}">
+              {% set icon = iconMap[item.network] ?? null %}
+              {% if icon %}
+                {{ icon.icon|raw }}
+              {% endif %}
+              <span>{{ item.url }}</span>
+            </a>
+          {% endfor %}
+        </div>
+
+        {% if settings.showCodeExamples ?? true %}
+          <div class="psl-code"><code>{{ '{% set links = entry.yourSocialLinksFieldHandle ?? null %}'|e }}
+{{ '{% if links and not links.isEmpty() %}'|e }}
+{{ '  <div class="social-links social-links--icons">'|e }}
+{{ '    {% for item in links.formatted(\'icons\') %}'|e }}
+{{ '      <a href="{{ item.url }}" class="social-links__item">'|e }}
+{{ '        {{ item.icon|raw }}'|e }}
+{{ '        <span>{{ item.url }}</span>'|e }}
+{{ '      </a>'|e }}
+{{ '    {% endfor %}'|e }}
+{{ '  </div>'|e }}
+{{ '{% endif %}'|e }}</code></div>
+        {% endif %}
+      </article>
+    </div>
+  </section>
+
+  <section class="psl-settings-card">
+    <h2>{{ 'Available networks'|t('pragmatic-social-links') }}</h2>
+    <p>{{ 'The field ships with a broad curated list of social networks ordered by mainstream popularity.'|t('pragmatic-social-links') }}</p>
+    <div class="readable">
+      {{ socialNetworks|map(item => item.label)|join(', ') }}
+    </div>
+  </section>
+</div>
