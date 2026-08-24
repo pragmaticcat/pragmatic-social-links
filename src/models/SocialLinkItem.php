@@ -17,7 +17,7 @@ class SocialLinkItem extends Model
         ];
     }
 
-    public function toArray(array $fields = [], array $expand = [], bool $recursive = true): array
+    public function toArray(array $fields = [], array $expand = [], $recursive = true): array
     {
         return [
             'network' => $this->network,
