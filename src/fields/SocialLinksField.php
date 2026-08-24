@@ -107,16 +107,18 @@ class SocialLinksField extends Field
         }
 
         $id = Html::id($this->handle);
-        $namespacedId = Craft::$app->getView()->namespaceInputId($id);
+        $view = Craft::$app->getView();
+        $namespacedId = $view->namespaceInputId($id);
+        $inputName = $view->namespaceInputName($this->handle);
 
-        Craft::$app->getView()->registerAssetBundle(SocialLinksAsset::class);
+        $view->registerAssetBundle(SocialLinksAsset::class);
 
-        return Craft::$app->getView()->renderTemplate('pragmatic-social-links/fields/input', [
+        return $view->renderTemplate('pragmatic-social-links/fields/input', [
             'field' => $this,
             'value' => $normalized,
             'id' => $id,
             'namespacedId' => $namespacedId,
-            'inputName' => $this->handle,
+            'inputName' => $inputName,
             'socialNetworks' => self::socialNetworkOptions(),
             'socialNetworkMap' => self::socialNetworks(),
         ]);
