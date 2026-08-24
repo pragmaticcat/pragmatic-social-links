@@ -74,7 +74,13 @@
   }
 {% endcss %}
 
-<div id="{{ namespacedId }}" class="psl-field" data-social-links-field>
+<div
+  id="{{ namespacedId }}"
+  class="psl-field"
+  data-social-links-field
+  data-input-name="{{ inputName|e('html_attr') }}"
+  data-empty-text="{{ 'No social links yet. Add the first row below.'|t('pragmatic-social-links')|e('html_attr') }}"
+>
   <table class="psl-table">
     <thead>
       <tr>
@@ -149,126 +155,3 @@
 
   <script type="application/json" data-network-map-json>{{ networkMapJson|raw }}</script>
 </div>
-
-{% js %}
-(() => {
-  const root = document.getElementById('{{ namespacedId|e('js') }}');
-  if (!root || root.dataset.pslReady) {
-    return;
-  }
-  root.dataset.pslReady = '1';
-
-  const tbody = root.querySelector('[data-rows]');
-  const template = root.querySelector('[data-row-template]');
-  const addButton = root.querySelector('[data-add-row]');
-  const networkMapNode = root.querySelector('[data-network-map-json]');
-  const networkMap = networkMapNode ? JSON.parse(networkMapNode.textContent || '[]') : [];
-  let dragRow = null;
-
-  const networkByHandle = new Map(networkMap.map(function(item) {
-    return [item.handle, item];
-  }));
-
-  const updateEmptyState = () => {
-    const rows = tbody.querySelectorAll('[data-row]');
-    const empty = tbody.querySelector('[data-empty-state]');
-    if (rows.length && empty) {
-      empty.remove();
-    } else if (!rows.length && !empty) {
-      const row = document.createElement('tr');
-      row.dataset.emptyState = '1';
-      row.innerHTML = '<td colspan="4" class="psl-empty">{{ "No social links yet. Add the first row below."|t("pragmatic-social-links")|e("js") }}</td>';
-      tbody.appendChild(row);
-    }
-  };
-
-  const reindexRows = () => {
-    tbody.querySelectorAll('[data-row]').forEach((row, index) => {
-      row.querySelectorAll('select,input').forEach((input) => {
-        const base = input.dataset.nameBase || (() => {
-          const match = input.name ? input.name.match(/\]\[(.*?)\]$/) : null;
-          return match ? match[1] : null;
-        })();
-        if (!base) {
-          return;
-        }
-        input.name = '{{ inputName|e("js") }}[' + index + '][' + base + ']';
-      });
-    });
-  };
-
-  const renderPreview = (row) => {
-    const select = row.querySelector('[data-network-select]');
-    const preview = row.querySelector('[data-network-preview]');
-    const item = networkByHandle.get(select.value);
-    if (!preview) {
-      return;
-    }
-    if (!item) {
-      preview.innerHTML = '';
-      return;
-    }
-    preview.innerHTML = item.icon + '<span>' + item.label + '</span>';
-  };
-
-  const attachRow = (row) => {
-    row.querySelector('[data-remove-row]').addEventListener('click', () => {
-      row.remove();
-      updateEmptyState();
-      reindexRows();
-    });
-
-    row.querySelector('[data-network-select]').addEventListener('change', () => {
-      renderPreview(row);
-    });
-
-    row.addEventListener('dragstart', () => {
-      dragRow = row;
-      row.classList.add('psl-dragging');
-    });
-
-    row.addEventListener('dragend', () => {
-      dragRow = null;
-      row.classList.remove('psl-dragging');
-      reindexRows();
-    });
-
-    row.addEventListener('dragover', (event) => {
-      event.preventDefault();
-      if (!dragRow || dragRow === row) {
-        return;
-      }
-      const rect = row.getBoundingClientRect();
-      const before = event.clientY < rect.top + rect.height / 2;
-      tbody.insertBefore(dragRow, before ? row : row.nextSibling);
-    });
-
-    renderPreview(row);
-  };
-
-  const addRow = () => {
-    if (!template) {
-      return;
-    }
-
-    const fragment = template.content.cloneNode(true);
-    const row = fragment.querySelector('[data-row]');
-    if (!row) {
-      return;
-    }
-
-    tbody.appendChild(fragment);
-    attachRow(row);
-    updateEmptyState();
-    reindexRows();
-  };
-
-  tbody.querySelectorAll('[data-row]').forEach((row) => attachRow(row));
-  updateEmptyState();
-  reindexRows();
-
-  if (addButton) {
-    addButton.addEventListener('click', addRow);
-  }
-})();
-{% endjs %}

@@ -7,6 +7,7 @@ use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\helpers\Html;
 use craft\helpers\Json;
+use pragmatic\sociallinks\assetbundles\sociallinks\SocialLinksAsset;
 use pragmatic\sociallinks\models\SocialLinkItem;
 use pragmatic\sociallinks\models\SocialLinksFieldValue;
 use yii\db\Schema;
@@ -108,7 +109,7 @@ class SocialLinksField extends Field
         $id = Html::id($this->handle);
         $namespacedId = Craft::$app->getView()->namespaceInputId($id);
 
-        Craft::$app->getView()->registerAssetBundle(\craft\web\assets\cp\CpAsset::class);
+        Craft::$app->getView()->registerAssetBundle(SocialLinksAsset::class);
 
         return Craft::$app->getView()->renderTemplate('pragmatic-social-links/fields/input', [
             'field' => $this,
