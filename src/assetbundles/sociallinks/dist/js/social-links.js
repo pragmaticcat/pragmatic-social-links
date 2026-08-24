@@ -123,34 +123,10 @@
     preview.innerHTML = item.icon + '<span>' + item.label + '</span>';
   };
 
-  SocialLinksField.prototype.filterOptions = function(row, query) {
-    var select = row.querySelector('[data-network-select]');
-    var normalizedQuery = (query || '').toLowerCase();
-    var options;
-    var i;
-    var text;
-
-    if (!select) {
-      return;
-    }
-
-    options = select.querySelectorAll('option');
-    for (i = 0; i < options.length; i++) {
-      if (!options[i].value) {
-        options[i].hidden = false;
-        continue;
-      }
-
-      text = (options[i].textContent || '').toLowerCase();
-      options[i].hidden = normalizedQuery !== '' && text.indexOf(normalizedQuery) === -1;
-    }
-  };
-
   SocialLinksField.prototype.attachRow = function(row) {
     var self = this;
     var removeButton = row.querySelector('[data-remove-row]');
     var select = row.querySelector('[data-network-select]');
-    var search = row.querySelector('[data-network-search]');
 
     if (removeButton) {
       removeButton.addEventListener('click', function() {
@@ -163,12 +139,6 @@
     if (select) {
       select.addEventListener('change', function() {
         self.renderPreview(row);
-      });
-    }
-
-    if (search) {
-      search.addEventListener('input', function() {
-        self.filterOptions(row, search.value);
       });
     }
 
@@ -198,7 +168,6 @@
     });
 
     this.renderPreview(row);
-    this.filterOptions(row, search ? search.value : '');
   };
 
   SocialLinksField.prototype.addRow = function() {

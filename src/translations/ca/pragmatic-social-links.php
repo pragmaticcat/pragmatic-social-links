@@ -6,7 +6,6 @@ return [
     'Title' => 'Títol',
     'URL' => 'URL',
     'Select a social network' => 'Selecciona una xarxa social',
-    'Search social networks...' => 'Buscar xarxes socials...',
     'Select a social network first' => 'Selecciona primer una xarxa social',
     'Defaults to the social network name' => 'Per defecte serà el nom de la xarxa social',
     'No social links yet. Add the first row below.' => 'Encara no hi ha enllaços socials. Afegeix la primera fila a continuació.',

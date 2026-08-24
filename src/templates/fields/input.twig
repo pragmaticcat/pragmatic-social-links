@@ -69,9 +69,6 @@
     width: 16px;
     height: 16px;
   }
-  .psl-network-search {
-    margin-bottom: 8px;
-  }
   .psl-add {
     justify-self: start;
   }
@@ -101,13 +98,6 @@
               <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
             </td>
             <td>
-              <input
-                class="text fullwidth psl-network-search"
-                type="text"
-                value=""
-                placeholder="{{ 'Search social networks...'|t('pragmatic-social-links') }}"
-                data-network-search
-              />
               <select class="select" name="{{ field.handle }}[{{ loop.index0 }}][network]" data-network-select>
                 <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
                 {% for option in socialNetworks %}
@@ -156,13 +146,6 @@
         <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
       </td>
       <td>
-        <input
-          class="text fullwidth psl-network-search"
-          type="text"
-          value=""
-          placeholder="{{ 'Search social networks...'|t('pragmatic-social-links') }}"
-          data-network-search
-        />
         <select class="select" name="{{ field.handle }}[__INDEX__][network]" data-network-select>
           <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
           {% for option in socialNetworks %}
