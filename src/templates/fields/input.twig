@@ -74,7 +74,7 @@
   }
 {% endcss %}
 
-<div id="{{ namespacedId }}" class="psl-field" data-social-links-field data-network-map="{{ networkMapJson|e('html_attr') }}">
+<div id="{{ namespacedId }}" class="psl-field" data-social-links-field>
   <table class="psl-table">
     <thead>
       <tr>
@@ -92,7 +92,7 @@
               <button type="button" class="psl-drag" title="{{ 'Reorder'|t('pragmatic-social-links') }}">⋮⋮</button>
             </td>
             <td>
-              <select class="select" name="{{ field.handle }}[{{ loop.index0 }}][network]" data-network-select>
+              <select class="select" name="{{ inputName }}[{{ loop.index0 }}][network]" data-network-select>
                 <option value="">{{ 'Select a social network'|t('pragmatic-social-links') }}</option>
                 {% for option in socialNetworks %}
                   <option value="{{ option.value }}" {{ option.value == row.network ? 'selected' }}>{{ option.label }}</option>
@@ -107,7 +107,7 @@
               </div>
             </td>
             <td>
-              <input class="text fullwidth" type="url" name="{{ field.handle }}[{{ loop.index0 }}][url]" value="{{ row.url }}" placeholder="https://..." />
+              <input class="text fullwidth" type="url" name="{{ inputName }}[{{ loop.index0 }}][url]" value="{{ row.url }}" placeholder="https://..." />
             </td>
             <td class="psl-remove">
               <button type="button" class="btn" data-remove-row>{{ 'Delete'|t('site') }}</button>
@@ -146,6 +146,8 @@
       </td>
     </tr>
   </template>
+
+  <script type="application/json" data-network-map-json>{{ networkMapJson|raw }}</script>
 </div>
 
 {% js %}
@@ -159,10 +161,13 @@
   const tbody = root.querySelector('[data-rows]');
   const template = root.querySelector('[data-row-template]');
   const addButton = root.querySelector('[data-add-row]');
-  const networkMap = JSON.parse(root.dataset.networkMap || '[]');
+  const networkMapNode = root.querySelector('[data-network-map-json]');
+  const networkMap = networkMapNode ? JSON.parse(networkMapNode.textContent || '[]') : [];
   let dragRow = null;
 
-  const networkByHandle = new Map(networkMap.map((item) => [item.handle, item]));
+  const networkByHandle = new Map(networkMap.map(function(item) {
+    return [item.handle, item];
+  }));
 
   const updateEmptyState = () => {
     const rows = tbody.querySelectorAll('[data-row]');
@@ -180,11 +185,14 @@
   const reindexRows = () => {
     tbody.querySelectorAll('[data-row]').forEach((row, index) => {
       row.querySelectorAll('select,input').forEach((input) => {
-        const base = input.dataset.nameBase || input.name.match(/\]\[(.*?)\]$/)?.[1];
+        const base = input.dataset.nameBase || (() => {
+          const match = input.name ? input.name.match(/\]\[(.*?)\]$/) : null;
+          return match ? match[1] : null;
+        })();
         if (!base) {
           return;
         }
-        input.name = '{{ field.handle|e("js") }}[' + index + '][' + base + ']';
+        input.name = '{{ inputName|e("js") }}[' + index + '][' + base + ']';
       });
     });
   };
@@ -239,8 +247,16 @@
   };
 
   const addRow = () => {
+    if (!template) {
+      return;
+    }
+
     const fragment = template.content.cloneNode(true);
     const row = fragment.querySelector('[data-row]');
+    if (!row) {
+      return;
+    }
+
     tbody.appendChild(fragment);
     attachRow(row);
     updateEmptyState();
@@ -251,6 +267,8 @@
   updateEmptyState();
   reindexRows();
 
-  addButton.addEventListener('click', addRow);
+  if (addButton) {
+    addButton.addEventListener('click', addRow);
+  }
 })();
 {% endjs %}
