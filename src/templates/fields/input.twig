@@ -85,6 +85,7 @@
       <tr>
         <th class="psl-handle"></th>
         <th>{{ 'Social network'|t('pragmatic-social-links') }}</th>
+        <th>{{ 'Title'|t('pragmatic-social-links') }}</th>
         <th>{{ 'URL'|t('pragmatic-social-links') }}</th>
         <th class="psl-remove"></th>
       </tr>
@@ -112,6 +113,15 @@
               </div>
             </td>
             <td>
+              <input
+                class="text fullwidth"
+                type="text"
+                name="{{ field.handle }}[{{ loop.index0 }}][title]"
+                value="{{ row.title }}"
+                placeholder="{{ 'Defaults to the social network name'|t('pragmatic-social-links') }}"
+              />
+            </td>
+            <td>
               <input class="text fullwidth" type="url" name="{{ field.handle }}[{{ loop.index0 }}][url]" value="{{ row.url }}" placeholder="https://..." />
             </td>
             <td class="psl-remove">
@@ -121,7 +131,7 @@
         {% endfor %}
       {% else %}
         <tr data-empty-state>
-          <td colspan="4" class="psl-empty">{{ 'No social links yet. Add the first row below.'|t('pragmatic-social-links') }}</td>
+          <td colspan="5" class="psl-empty">{{ 'No social links yet. Add the first row below.'|t('pragmatic-social-links') }}</td>
         </tr>
       {% endif %}
     </tbody>
@@ -142,6 +152,14 @@
           {% endfor %}
         </select>
         <div class="psl-network-preview" data-network-preview></div>
+      </td>
+      <td>
+        <input
+          class="text fullwidth"
+          type="text"
+          name="{{ field.handle }}[__INDEX__][title]"
+          placeholder="{{ 'Defaults to the social network name'|t('pragmatic-social-links') }}"
+        />
       </td>
       <td>
         <input class="text fullwidth" type="url" name="{{ field.handle }}[__INDEX__][url]" placeholder="https://..." />

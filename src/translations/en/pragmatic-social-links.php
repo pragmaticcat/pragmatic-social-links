@@ -3,8 +3,10 @@
 return [
     'Social Links' => 'Social Links',
     'Social network' => 'Social network',
+    'Title' => 'Title',
     'URL' => 'URL',
     'Select a social network' => 'Select a social network',
+    'Defaults to the social network name' => 'Defaults to the social network name',
     'No social links yet. Add the first row below.' => 'No social links yet. Add the first row below.',
     'Add social link' => 'Add social link',
     'Reorder' => 'Reorder',

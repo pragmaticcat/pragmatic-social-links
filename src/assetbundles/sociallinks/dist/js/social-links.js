@@ -30,7 +30,7 @@
       return name;
     }
 
-    return name.replace(/\[(?:__INDEX__|\d+)\]\[(network|url)\]$/, '[' + index + '][$1]');
+    return name.replace(/\[(?:__INDEX__|\d+)\]\[(network|title|url)\]$/, '[' + index + '][$1]');
   }
 
   function SocialLinksField(root) {
@@ -76,7 +76,7 @@
     if (rows.length === 0 && !empty) {
       var row = document.createElement('tr');
       row.dataset.emptyState = '1';
-      row.innerHTML = '<td colspan="4" class="psl-empty">' + (this.root.dataset.emptyText || 'No social links yet.') + '</td>';
+      row.innerHTML = '<td colspan="5" class="psl-empty">' + (this.root.dataset.emptyText || 'No social links yet.') + '</td>';
       this.tbody.appendChild(row);
     }
   };

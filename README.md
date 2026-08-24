@@ -8,6 +8,7 @@ Craft CMS plugin that adds a custom field type called `Social Links` to manage s
 - Lets editors add multiple social links per entry
 - Each row contains:
   - a social network selector
+  - an optional custom title
   - a URL field
 - Rows can be reordered with drag & drop
 - Stores values as JSON
@@ -57,6 +58,7 @@ php craft plugin/install pragmatic-social-links
 Each row allows:
 
 - selecting a social network
+- customizing the displayed title
 - entering the corresponding URL
 - reordering rows later
 - deleting unused rows
@@ -80,7 +82,7 @@ Example:
   <ul>
     {% for item in links.formatted() %}
       <li>
-        <strong>{{ item.label }}</strong>:
+        <strong>{{ item.title }}</strong>:
         <a href="{{ item.url }}">{{ item.url }}</a>
       </li>
     {% endfor %}
@@ -97,7 +99,7 @@ Example:
   <ul>
     {% for item in links.formatted() %}
       <li>
-        <strong>{{ item.label }}</strong>:
+        <strong>{{ item.title }}</strong>:
         <a href="{{ item.url }}">{{ item.url }}</a>
       </li>
     {% endfor %}
@@ -115,7 +117,7 @@ Example:
     {% for item in links.formatted('icons') %}
       <a href="{{ item.url }}" class="social-links__item">
         {{ item.icon|raw }}
-        <span>{{ item.url }}</span>
+        <span>{{ item.title }}</span>
       </a>
     {% endfor %}
   </div>

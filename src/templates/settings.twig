@@ -132,7 +132,7 @@
 {{ '{% if links and not links.isEmpty() %}'|e }}
 {{ '  <ul>'|e }}
 {{ '    {% for item in links.formatted() %}'|e }}
-{{ '      <li><strong>{{ item.label }}</strong>: <a href="{{ item.url }}">{{ item.url }}</a></li>'|e }}
+{{ '      <li><strong>{{ item.title }}</strong>: <a href="{{ item.url }}">{{ item.url }}</a></li>'|e }}
 {{ '    {% endfor %}'|e }}
 {{ '  </ul>'|e }}
 {{ '{% endif %}'|e }}</code></div>
@@ -160,7 +160,7 @@
 {{ '    {% for item in links.formatted(\'icons\') %}'|e }}
 {{ '      <a href="{{ item.url }}" class="social-links__item">'|e }}
 {{ '        {{ item.icon|raw }}'|e }}
-{{ '        <span>{{ item.url }}</span>'|e }}
+{{ '        <span>{{ item.title }}</span>'|e }}
 {{ '      </a>'|e }}
 {{ '    {% endfor %}'|e }}
 {{ '  </div>'|e }}

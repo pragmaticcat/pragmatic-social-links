@@ -60,14 +60,16 @@ class SocialLinksField extends Field
             }
 
             $network = trim((string)($row['network'] ?? ''));
+            $title = trim((string)($row['title'] ?? ''));
             $url = trim((string)($row['url'] ?? ''));
 
-            if ($network === '' && $url === '') {
+            if ($network === '' && $title === '' && $url === '') {
                 continue;
             }
 
             $items[] = new SocialLinkItem([
                 'network' => $network,
+                'title' => $title,
                 'url' => $url,
             ]);
         }
@@ -95,7 +97,9 @@ class SocialLinksField extends Field
 
         return implode(' ', array_map(static function(SocialLinkItem $item): string {
             $definition = self::socialNetworkDefinition($item->network);
-            return trim(($definition['label'] ?? $item->network) . ' ' . $item->url);
+            $label = $definition['label'] ?? $item->network;
+            $title = trim($item->title) !== '' ? trim($item->title) : $label;
+            return trim($label . ' ' . $title . ' ' . $item->url);
         }, $normalized->all()));
     }
 

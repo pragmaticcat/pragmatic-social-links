@@ -3,8 +3,10 @@
 return [
     'Social Links' => 'Enllaços socials',
     'Social network' => 'Xarxa social',
+    'Title' => 'Títol',
     'URL' => 'URL',
     'Select a social network' => 'Selecciona una xarxa social',
+    'Defaults to the social network name' => 'Per defecte serà el nom de la xarxa social',
     'No social links yet. Add the first row below.' => 'Encara no hi ha enllaços socials. Afegeix la primera fila a continuació.',
     'Add social link' => 'Afegir enllaç social',
     'Reorder' => 'Reordenar',

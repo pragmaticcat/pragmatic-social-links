@@ -59,10 +59,13 @@ class SocialLinksFieldValue extends Model implements IteratorAggregate, Countabl
     {
         return array_map(static function(SocialLinkItem $item): array {
             $network = SocialLinksField::socialNetworkDefinition($item->network);
+            $label = $network['label'] ?? $item->network;
+            $title = trim($item->title) !== '' ? trim($item->title) : $label;
 
             return [
                 'network' => $item->network,
-                'label' => $network['label'] ?? $item->network,
+                'label' => $label,
+                'title' => $title,
                 'url' => $item->url,
                 'icon' => $network['icon'] ?? '',
             ];
