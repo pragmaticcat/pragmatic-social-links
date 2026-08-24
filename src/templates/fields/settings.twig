@@ -1,10 +1,3 @@
-{% import '_includes/forms' as forms %}
-
-{{ forms.selectField({
-  label: 'Translation method'|t('site'),
-  instructions: 'Define how social links should be translated between sites.'|t('pragmatic-social-links'),
-  id: 'translationMethod',
-  name: 'translationMethod',
-  value: field.translationMethod,
-  options: field.translationSettingsOptions(),
-}) }}
+<p class="light">
+  {{ 'This field does not require extra custom settings. Use Craft’s standard field settings for handle, instructions, and translation behavior.'|t('pragmatic-social-links') }}
+</p>

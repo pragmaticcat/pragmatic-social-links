@@ -19,4 +19,5 @@ return [
     'Available networks' => 'Available networks',
     'The field ships with a broad curated list of social networks ordered by mainstream popularity.' => 'The field ships with a broad curated list of social networks ordered by mainstream popularity.',
     'Define how social links should be translated between sites.' => 'Define how social links should be translated between sites.',
+    'This field does not require extra custom settings. Use Craft’s standard field settings for handle, instructions, and translation behavior.' => 'This field does not require extra custom settings. Use Craft’s standard field settings for handle, instructions, and translation behavior.',
 ];
